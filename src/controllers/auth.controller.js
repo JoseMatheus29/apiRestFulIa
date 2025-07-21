@@ -24,7 +24,6 @@ const register = async (req, res) => {
         nome,
         email,
         senhaHash,
-        // Todos os usuários criados pela API serão 'USER'
         role: 'USER',
       },
     });
@@ -60,7 +59,7 @@ const login = async (req, res) => {
     }
 
     const token = jwt.sign({ id: user.id, role: user.role }, process.env.JWT_SECRET, {
-      expiresIn: '1d', // Token expira em 1 dia
+      expiresIn: '1d', 
     });
 
     res.json({

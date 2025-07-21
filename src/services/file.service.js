@@ -15,8 +15,6 @@ const parseFileContent = (fileBuffer, mimetype) => {
     } else if (mimetype === 'application/pdf') {
       pdf(fileBuffer)
         .then(data => {
-          // Para o PDF, cada "registro" pode ser uma linha ou parágrafo.
-          // Vamos simplesmente dividir por quebra de linha.
           const lines = data.text.split('\n').filter(line => line.trim() !== '');
           const results = lines.map(line => ({ content: line }));
           resolve(results);

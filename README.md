@@ -106,6 +106,58 @@ Um usuário **Admin** é criado automaticamente. Utilize estas credenciais para 
 
 ---
 
+## Principais Rotas da API
+
+> Para detalhes completos e exemplos, acesse a documentação Swagger em [http://localhost:3000/api-docs](http://localhost:3000/api-docs).
+
+### **Autenticação**
+- `POST /auth/register`  
+  Registra um novo usuário (sempre como USER).
+  ```json
+  {
+    "nome": "João",
+    "email": "joao@email.com",
+    "senha": "senha123"
+  }
+  ```
+- `POST /auth/login`  
+  Faz login e retorna o token JWT.
+  ```json
+  {
+    "email": "joao@email.com",
+    "senha": "senha123"
+  }
+  ```
+- `GET /auth/me`  
+  Retorna os dados do usuário autenticado (requer token).
+
+---
+
+### **Datasets**
+- `POST /datasets/upload`  
+  Upload de arquivo `.csv` ou `.pdf` (multipart/form-data).  
+  Requer autenticação.
+- `GET /datasets`  
+  Lista todos os datasets do usuário + todos os datasets públicos (enviados por admin).
+- `GET /datasets/:id/records`  
+  Lista os registros de um dataset (se o usuário tiver permissão).
+
+---
+
+### **Consultas (IA)**
+- `POST /queries`  
+  Faz uma pergunta sobre um dataset.
+  ```json
+  {
+    "pergunta": "O que diz o contrato?",
+    "datasetId": 1
+  }
+  ```
+- `GET /queries`  
+  Lista o histórico de perguntas e respostas do usuário autenticado.
+
+---
+
 ## Como Parar a Aplicação
 
 Para parar todos os serviços que estão rodando via Docker:

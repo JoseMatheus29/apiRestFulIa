@@ -12,7 +12,6 @@ const uploadDataset = async (req, res) => {
     const { originalname, mimetype, buffer } = req.file;
     const { userId } = req;
 
-    // 1. Criar o dataset
     const newDataset = await prisma.dataset.create({
       data: {
         nome: originalname,
@@ -20,16 +19,13 @@ const uploadDataset = async (req, res) => {
       },
     });
 
-    // 2. Processar o conteúdo do arquivo
     const recordsData = await parseFileContent(buffer, mimetype);
 
-    // 3. Preparar os registros para inserção no banco
     const recordsToCreate = recordsData.map(record => ({
       dadosJson: record,
       datasetId: newDataset.id,
     }));
 
-    // 4. Inserir os registros em lote
     await prisma.record.createMany({
       data: recordsToCreate,
     });
@@ -55,8 +51,8 @@ const getDatasets = async (req, res) => {
     const datasets = await prisma.dataset.findMany({
       where: {
         OR: [
-          { usuarioId: userId }, // Datasets do próprio usuário
-          { usuario: { role: 'ADMIN' } }, // Datasets de admins
+          { usuarioId: userId },
+          { usuario: { role: 'ADMIN' } }, 
         ],
       },
       orderBy: {
@@ -79,14 +75,13 @@ const getRecordsByDataset = async (req, res) => {
 
     const dataset = await prisma.dataset.findUnique({
       where: { id: datasetId },
-      include: { usuario: true }, // Inclui dados do usuário dono do dataset
+      include: { usuario: true }, 
     });
 
     if (!dataset) {
       return res.status(404).json({ message: 'Dataset não encontrado.' });
     }
 
-    // Permite acesso se o dataset for do usuário OU se for de um admin
     if (dataset.usuarioId !== userId && dataset.usuario.role !== 'ADMIN') {
       return res.status(403).json({ message: 'Acesso negado. Este dataset não pertence a você.' });
     }
