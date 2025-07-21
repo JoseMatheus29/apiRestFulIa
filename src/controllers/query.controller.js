@@ -14,13 +14,14 @@ const createQuery = async (req, res) => {
 
     const dataset = await prisma.dataset.findUnique({
       where: { id: datasetId },
+      include: { usuario: true },
     });
 
     if (!dataset) {
       return res.status(404).json({ message: 'Dataset não encontrado.' });
     }
 
-    if (dataset.usuarioId !== userId) {
+    if (dataset.usuarioId !== userId && dataset.usuario.role !== 'ADMIN') {
       return res.status(403).json({ message: 'Acesso negado. Este dataset não pertence a você.' });
     }
 

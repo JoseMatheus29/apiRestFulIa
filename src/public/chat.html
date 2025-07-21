@@ -14,9 +14,12 @@
     <div id="alert-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
 
     <div id="chat-container" class="w-full max-w-lg flex flex-col h-[80vh] bg-white rounded-lg shadow-xl">
-        <header class="bg-blue-600 text-white p-4 text-center rounded-t-lg">
-            <h1 class="text-xl font-bold">Chatbot IA</h1>
-            <p class="text-sm">Pergunte sobre seus documentos</p>
+        <header class="bg-blue-600 text-white p-4 rounded-t-lg flex justify-between items-center">
+            <div>
+                <h1 class="text-xl font-bold">Chatbot IA</h1>
+                <p class="text-sm">Pergunte sobre seus documentos</p>
+            </div>
+            <button id="logoutButton" class="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 text-sm">Sair</button>
         </header>
 
         <main id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4">

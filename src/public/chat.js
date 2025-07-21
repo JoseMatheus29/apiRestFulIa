@@ -7,6 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatForm = document.getElementById('chat-form');
     const chatInput = document.getElementById('chat-input');
     const datasetSelect = document.getElementById('chatDatasetSelect');
+    const logoutButton = document.getElementById('logoutButton');
 
     if (!authToken) {
         // Usa a função de alerta para mostrar o erro
@@ -14,6 +15,11 @@ document.addEventListener('DOMContentLoaded', () => {
         chatForm.classList.add('hidden');
         return;
     }
+
+    logoutButton.addEventListener('click', () => {
+        localStorage.removeItem('authToken');
+        window.location.href = '/';
+    });
 
     // Função genérica para chamadas à API
     const apiFetch = async (endpoint, options = {}) => {

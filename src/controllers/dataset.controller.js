@@ -54,7 +54,10 @@ const getDatasets = async (req, res) => {
 
     const datasets = await prisma.dataset.findMany({
       where: {
-        usuarioId: userId,
+        OR: [
+          { usuarioId: userId }, // Datasets do próprio usuário
+          { usuario: { role: 'ADMIN' } }, // Datasets de admins
+        ],
       },
       orderBy: {
         criadoEm: 'desc',
@@ -75,16 +78,16 @@ const getRecordsByDataset = async (req, res) => {
     const datasetId = parseInt(id, 10);
 
     const dataset = await prisma.dataset.findUnique({
-      where: {
-        id: datasetId,
-      },
+      where: { id: datasetId },
+      include: { usuario: true }, // Inclui dados do usuário dono do dataset
     });
 
     if (!dataset) {
       return res.status(404).json({ message: 'Dataset não encontrado.' });
     }
 
-    if (dataset.usuarioId !== userId) {
+    // Permite acesso se o dataset for do usuário OU se for de um admin
+    if (dataset.usuarioId !== userId && dataset.usuario.role !== 'ADMIN') {
       return res.status(403).json({ message: 'Acesso negado. Este dataset não pertence a você.' });
     }
 
