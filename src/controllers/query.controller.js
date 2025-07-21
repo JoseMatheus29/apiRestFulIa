@@ -41,6 +41,27 @@ const createQuery = async (req, res) => {
   }
 };
 
+const getQueries = async (req, res) => {
+  try {
+    const { userId } = req;
+
+    const queries = await prisma.query.findMany({
+      where: {
+        usuarioId: userId,
+      },
+      orderBy: {
+        criadoEm: 'desc',
+      },
+    });
+
+    res.json(queries);
+  } catch (error) {
+    console.error('Erro ao listar queries:', error);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+};
+
 module.exports = {
   createQuery,
+  getQueries,
 }; 
