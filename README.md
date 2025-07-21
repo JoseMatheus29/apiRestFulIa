@@ -4,19 +4,15 @@
 
 ```mermaid
 flowchart TD
-    Start([Início]) --> Login[Login/Cadastro]
-    Login -->|Admin| Painel[Admin: Painel de Administração]
-    Login -->|User| Chatbot[Usuário: Chatbot]
-    Painel --> Upload[Upload de Dataset]
-    Upload --> DatasetsAdmin[Datasets Públicos (Admin)]
-    Chatbot --> Consulta[Consulta IA]
-    DatasetsAdmin -.-> Consulta
-    Chatbot --> DatasetsUser[Meus Datasets]
-    DatasetsUser --> Consulta
-    style Painel fill:#c7e0ff,stroke:#0366d6,stroke-width:2px
-    style Chatbot fill:#d1fae5,stroke:#059669,stroke-width:2px
-    style DatasetsAdmin fill:#fef9c3,stroke:#eab308,stroke-width:2px
-    style DatasetsUser fill:#f3e8ff,stroke:#a21caf,stroke-width:2px
+   Start([Início]) --> Login["Login / Cadastro"];
+    Login -- "Admin" --> Painel["Admin: Painel de Administração"];
+    Login -- "User" --> Chatbot["Usuário: Chatbot"];
+    Painel --> Upload["Upload de Dataset"];
+    Upload --> DatasetsAdmin["Datasets Públicos (Admin)"];
+    Chatbot --> Consulta["Consulta IA"];
+    DatasetsAdmin -.-> Consulta;
+    Chatbot --> DatasetsUser["Meus Datasets"];
+    DatasetsUser --> Consulta;
 ```
 
 > O fluxograma acima ilustra o fluxo principal do sistema: autenticação, separação de papéis, upload de datasets pelo admin (que ficam públicos), uso do chatbot e consultas sobre os documentos.
