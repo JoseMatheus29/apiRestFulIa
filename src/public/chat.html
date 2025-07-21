@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="pt-br" class="bg-gray-100">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot de Documentos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="utils.js" defer></script>
+    <script src="chat.js" defer></script>
+</head>
+<body class="font-sans text-gray-800 flex items-center justify-center min-h-screen">
+
+    <!-- Contêiner para Alertas Dinâmicos -->
+    <div id="alert-container" class="fixed top-5 right-5 z-50 space-y-2"></div>
+
+    <div id="chat-container" class="w-full max-w-lg flex flex-col h-[80vh] bg-white rounded-lg shadow-xl">
+        <header class="bg-blue-600 text-white p-4 text-center rounded-t-lg">
+            <h1 class="text-xl font-bold">Chatbot IA</h1>
+            <p class="text-sm">Pergunte sobre seus documentos</p>
+        </header>
+
+        <main id="chat-messages" class="flex-1 p-4 overflow-y-auto space-y-4">
+            <!-- Mensagens do chat aparecerão aqui -->
+            <div class="p-3 rounded-lg bg-gray-200 text-gray-700 self-start max-w-xs">
+                Olá! Por favor, selecione um dataset abaixo para começar a conversar.
+            </div>
+        </main>
+
+        <footer class="p-4 border-t bg-white rounded-b-lg">
+            <form id="chat-form" class="flex items-center gap-2">
+                <select id="chatDatasetSelect" required class="p-2 border rounded bg-white w-1/3"></select>
+                <input type="text" id="chat-input" placeholder="Digite sua pergunta..." class="flex-1 p-2 border rounded" required>
+                <button type="submit" class="bg-blue-500 text-white p-2 rounded hover:bg-blue-600">Enviar</button>
+            </form>
+        </footer>
+    </div>
+    
+</body>
+</html> 

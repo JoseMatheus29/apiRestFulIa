@@ -4,10 +4,8 @@ document.addEventListener('DOMContentLoaded', () => {
     // Elementos da UI
     const authSection = document.getElementById('authSection');
     const userSection = document.getElementById('userSection');
-    const queriesSection = document.getElementById('queriesSection');
     const recordsContainer = document.getElementById('recordsContainer');
     const userInfo = document.getElementById('userInfo');
-    const apiResponse = document.getElementById('apiResponse');
 
     // Formulários
     const registerForm = document.getElementById('registerForm');
@@ -15,18 +13,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const showRegister = document.getElementById('showRegister');
     const showLogin = document.getElementById('showLogin');
     const uploadForm = document.getElementById('uploadForm');
-    const queryForm = document.getElementById('queryForm');
 
     // Botões
     const logoutButton = document.getElementById('logoutButton');
     const fetchDatasetsButton = document.getElementById('fetchDatasetsButton');
-    const fetchQueriesButton = document.getElementById('fetchQueriesButton');
 
     // Listas
     const datasetsList = document.getElementById('datasetsList');
     const recordsList = document.getElementById('recordsList');
-    const queriesList = document.getElementById('queriesList');
-    const queryDatasetSelect = document.getElementById('queryDatasetSelect');
 
 
     let authToken = localStorage.getItem('authToken');
@@ -44,14 +38,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await fetch(url, { ...options, headers });
             const data = await response.json();
             
-            apiResponse.textContent = JSON.stringify(data, null, 2);
-
             if (!response.ok) {
                 throw new Error(data.message || 'Erro na API');
             }
             return data;
         } catch (error) {
-            apiResponse.textContent = `Erro: ${error.message}`;
+            showAlert(error.message, 'error');
             console.error('API Fetch Error:', error);
             throw error;
         }
@@ -62,14 +54,11 @@ document.addEventListener('DOMContentLoaded', () => {
         if (authToken) {
             authSection.classList.add('hidden');
             userSection.classList.remove('hidden');
-            queriesSection.classList.remove('hidden');
             fetchAuthenticatedUser();
             fetchDatasets();
-            fetchQueries();
         } else {
             authSection.classList.remove('hidden');
             userSection.classList.add('hidden');
-            queriesSection.classList.add('hidden');
             recordsContainer.classList.add('hidden');
             userInfo.textContent = '';
             // Sempre mostrar login por padrão
@@ -98,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
             senha: e.target.registerPassword.value,
         });
         await apiFetch('/auth/register', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-        alert('Usuário registrado com sucesso! Faça o login.');
+        showAlert('Usuário registrado com sucesso! Faça o login.', 'success');
         registerForm.reset();
     });
 
@@ -112,22 +101,27 @@ document.addEventListener('DOMContentLoaded', () => {
             const data = await apiFetch('/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
             authToken = data.token;
             localStorage.setItem('authToken', authToken);
-            updateUI();
+
+            if (data.user.role === 'USER') {
+                window.location.href = '/chat.html';
+            } else {
+                updateUI();
+            }
         } catch (error) {
-            alert('Falha no login. Verifique suas credenciais.');
+            // O erro já é mostrado pelo apiFetch
         }
     });
 
     logoutButton.addEventListener('click', () => {
         authToken = null;
         localStorage.removeItem('authToken');
-        updateUI();
+        window.location.href = '/'; // Redireciona para a página de login
     });
 
     const fetchAuthenticatedUser = async () => {
         try {
             const user = await apiFetch('/auth/me');
-            userInfo.textContent = `Logado como: ${user.nome} (${user.email})`;
+            userInfo.textContent = `Logado como: ${user.nome} (${user.role})`;
         } catch (error) {
             console.error('Erro ao buscar usuário:', error);
         }
@@ -138,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const datasets = await apiFetch('/datasets');
             datasetsList.innerHTML = '';
-            queryDatasetSelect.innerHTML = '<option value="">Selecione um Dataset</option>';
             if (datasets.length === 0) {
                 datasetsList.innerHTML = '<li>Nenhum dataset encontrado.</li>';
                 return;
@@ -149,11 +142,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 li.textContent = `ID: ${d.id} - ${d.nome} (${new Date(d.criadoEm).toLocaleDateString()})`;
                 li.onclick = () => fetchRecords(d.id, d.nome);
                 datasetsList.appendChild(li);
-
-                const option = document.createElement('option');
-                option.value = d.id;
-                option.textContent = d.nome;
-                queryDatasetSelect.appendChild(option);
             });
         } catch (error) {
             console.error('Erro ao buscar datasets:', error);
@@ -187,52 +175,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await apiFetch('/datasets/upload', { method: 'POST', body: formData });
-            alert('Arquivo enviado com sucesso!');
+            showAlert('Arquivo enviado com sucesso!', 'success');
             fetchDatasets();
             uploadForm.reset();
         } catch (error) {
-             alert('Falha no upload. Verifique o console para mais detalhes.');
+             // O erro já é mostrado pelo apiFetch
         }
     });
 
     fetchDatasetsButton.addEventListener('click', fetchDatasets);
-
-    // --- QUERIES ---
-    const fetchQueries = async () => {
-        try {
-            const queries = await apiFetch('/queries');
-            queriesList.innerHTML = '';
-            if (queries.length === 0) {
-                queriesList.innerHTML = '<li>Nenhum histórico de consulta.</li>';
-                return;
-            }
-            queries.forEach(q => {
-                const li = document.createElement('li');
-                li.innerHTML = `<strong>P:</strong> ${q.pergunta} <br> <strong>R:</strong> ${q.resposta}`;
-                queriesList.appendChild(li);
-            });
-        } catch (error) {
-             console.error('Erro ao buscar queries:', error);
-        }
-    };
-    
-    queryForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        try {
-            const body = JSON.stringify({
-                pergunta: e.target.queryInput.value,
-                datasetId: parseInt(e.target.queryDatasetSelect.value),
-            });
-            await apiFetch('/queries', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body });
-            alert('Query enviada com sucesso!');
-            fetchQueries();
-            queryForm.reset();
-        } catch (error) {
-            alert('Falha ao enviar query.');
-        }
-    });
-
-    fetchQueriesButton.addEventListener('click', fetchQueries);
 
     // --- INICIALIZAÇÃO ---
     updateUI();

@@ -24,6 +24,8 @@ const register = async (req, res) => {
         nome,
         email,
         senhaHash,
+        // Todos os usuários criados pela API serão 'USER'
+        role: 'USER',
       },
     });
 
@@ -31,6 +33,7 @@ const register = async (req, res) => {
       id: newUser.id,
       nome: newUser.nome,
       email: newUser.email,
+      role: newUser.role,
     });
   } catch (error) {
     console.error('Erro no registro:', error);
@@ -65,6 +68,7 @@ const login = async (req, res) => {
         id: user.id,
         nome: user.nome,
         email: user.email,
+        role: user.role,
       },
       token,
     });

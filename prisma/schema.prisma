@@ -11,11 +11,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   id        Int       @id @default(autoincrement())
   nome      String
   email     String    @unique
   senhaHash String    @map("senha_hash")
+  role      Role      @default(USER)
   datasets  Dataset[]
   queries   Query[]
 
