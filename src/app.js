@@ -6,6 +6,7 @@ const app = express();
 
 const authRoutes = require('./routes/auth.routes');
 const datasetRoutes = require('./routes/dataset.routes');
+const queryRoutes = require('./routes/query.routes');
 
 app.use(cors());
 app.use(express.json());
@@ -17,6 +18,7 @@ app.get('/', (req, res) => {
 
 app.use('/auth', authRoutes);
 app.use('/datasets', datasetRoutes);
+app.use('/queries', queryRoutes);
 
 const PORT = process.env.PORT || 3000;
 

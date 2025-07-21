@@ -48,6 +48,61 @@ const uploadDataset = async (req, res) => {
   }
 };
 
+const getDatasets = async (req, res) => {
+  try {
+    const { userId } = req;
+
+    const datasets = await prisma.dataset.findMany({
+      where: {
+        usuarioId: userId,
+      },
+      orderBy: {
+        criadoEm: 'desc',
+      },
+    });
+
+    res.json(datasets);
+  } catch (error) {
+    console.error('Erro ao listar datasets:', error);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+};
+
+const getRecordsByDataset = async (req, res) => {
+  try {
+    const { userId } = req;
+    const { id } = req.params;
+    const datasetId = parseInt(id, 10);
+
+    const dataset = await prisma.dataset.findUnique({
+      where: {
+        id: datasetId,
+      },
+    });
+
+    if (!dataset) {
+      return res.status(404).json({ message: 'Dataset não encontrado.' });
+    }
+
+    if (dataset.usuarioId !== userId) {
+      return res.status(403).json({ message: 'Acesso negado. Este dataset não pertence a você.' });
+    }
+
+    const records = await prisma.record.findMany({
+      where: {
+        datasetId: datasetId,
+      },
+    });
+
+    res.json(records);
+  } catch (error) {
+    console.error('Erro ao listar registros do dataset:', error);
+    res.status(500).json({ message: 'Erro interno do servidor.' });
+  }
+};
+
 module.exports = {
   uploadDataset,
+  getDatasets,
+  getRecordsByDataset,
 }; 

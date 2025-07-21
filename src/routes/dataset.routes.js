@@ -5,6 +5,9 @@ const upload = require('../middlewares/upload.middleware');
 
 const router = Router();
 
+router.get('/', authMiddleware, datasetController.getDatasets);
+router.get('/:id/records', authMiddleware, datasetController.getRecordsByDataset);
+
 router.post(
   '/upload',
   authMiddleware,
